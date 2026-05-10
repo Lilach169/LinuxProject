@@ -116,14 +116,13 @@ int main() {
 
     InitWindow(800, 600, "Graph");
     SetTargetFPS(60);
-    while (!WindowShouldClose()) {
 
+    while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
         for (int i = 0; i < node; i++) {
             for (int j = 0; j < node; j++) {
-
                 if (graph[i][j] != 0) {
                     DrawLine(pos[i].x, pos[i].y,
                              pos[j].x, pos[j].y,
@@ -132,21 +131,18 @@ int main() {
             }
         }
 
+
+
+        for (int i = 0; i < node; i++) {
+            DrawCircle(pos[i].x, pos[i].y, 20, BLUE);
+            DrawText(TextFormat("%d", i),
+                     pos[i].x - 5,
+                     pos[i].y - 10,20, WHITE);
+        }
+        EndDrawing();
     }
-    for (int i = 0; i < node; i++) {
+    CloseWindow();
 
-        DrawCircle(pos[i].x, pos[i].y, 20, BLUE);
-
-        DrawText(TextFormat("%d", i),
-                 pos[i].x - 5,
-                 pos[i].y - 10,
-                 20,
-                 WHITE);
-    }
-    EndDrawing();
-}
-
-CloseWindow();
     return 0;
 }
 
