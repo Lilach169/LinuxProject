@@ -93,38 +93,62 @@ int main() {
 
     // main loop to draw everything
     while (!WindowShouldClose()) {
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
+        BeginDrawing(); // capital B
+        ClearBackground(RAYWHITE); // capital C and B
 
-        // draw lines and weights for each edge
+        // defining custom pink color
+        Color CUSTOM_PINK = (Color){ 255, 105, 180, 255 };
+
+        // draw edges and arrows
         for (int i = 0; i < node; i++) {
             for (int j = 0; j < node; j++) {
                 if (graph[i][j] != 0) {
-                    // draw the line
-                    DrawLineV(pos[i], pos[j], GRAY);
+                    // draw connection line
+                    DrawLineEx(pos[i], pos[j], 2.5f, DARKGRAY);
 
-                    // show the weight in the middle
+                    // calculate midpoint for weight label
                     int midX = (pos[i].x + pos[j].x) / 2;
                     int midY = (pos[i].y + pos[j].y) / 2;
-                    DrawText(TextFormat("%d", graph[i][j]), midX, midY, 15, RED);
 
-                    // show direction with a small dot
+                    // white background behind weight
+                    DrawRectangle(midX - 12, midY - 12, 24, 24, RAYWHITE);
+
+                    // draw weight text (only once!)
+                    DrawText(TextFormat("%d", graph[i][j]), midX - 6, midY - 10, 20, MAROON);
+
+                    // calculate arrow direction
                     float angle = atan2f(pos[j].y - pos[i].y, pos[j].x - pos[i].x);
-                    int arrowX = pos[j].x - 25 * cosf(angle);
-                    int arrowY = pos[j].y - 25 * sinf(angle);
-                    DrawCircle(arrowX, arrowY, 4, DARKGRAY);
+
+                    // arrow tip position (offset from node center)
+                    float tipOffset = 30.0f;
+                    Vector2 tip = {
+                            pos[j].x - tipOffset * cosf(angle),
+                            pos[j].y - tipOffset * sinf(angle)
+                    };
+
+                    // V-shaped arrow (two lines from the tip)
+                    float arrowLength = 15.0f;
+                    float arrowAngle = 0.4f;  // angle spread for the V shape
+
+                    Vector2 left = {
+                            tip.x - arrowLength * cosf(angle - arrowAngle),
+                            tip.y - arrowLength * sinf(angle - arrowAngle)
+                    };
+
+                    Vector2 right = {
+                            tip.x - arrowLength * cosf(angle + arrowAngle),
+                            tip.y - arrowLength * sinf(angle + arrowAngle)
+                    };
+
+                    // draw V-shaped arrowhead with two thick lines
+                    DrawLineEx(tip, left, 3.0f, MAROON);
+                    DrawLineEx(tip, right, 3.0f, MAROON);
                 }
             }
         }
 
-        // draw the nodes as blue circles
-        for (int i = 0; i < node; i++) {
-            DrawCircleV(pos[i], 20, BLUE);
-            // write node number inside
-            DrawText(TextFormat("%d", i), pos[i].x - 5, pos[i].y - 10, 20, WHITE);
-        }
-
         EndDrawing();
+
     }
 
     CloseWindow();
