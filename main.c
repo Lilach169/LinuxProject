@@ -1,23 +1,25 @@
 #include <stdio.h>
 #include "raylib.h"
+#include <math.h>
 
 #define MAX_NODES 100
 #define INF 1000000000
 
 int main() {
+    // open and read the input file
     FILE *file = fopen("input.txt", "r");
-
     if (file == NULL) {
         printf("Error opening file\n");
         return 0;
     }
 
     int node, edge;
-
+    // get number of nodes and edges
     fscanf(file, "%d%d", &node, &edge);
 
     int graph[MAX_NODES][MAX_NODES];
 
+    // initialize the matrix with zero
     for (int i = 0; i < node; i++) {
         for (int j = 0; j < node; j++) {
             graph[i][j] = 0;
@@ -25,6 +27,7 @@ int main() {
     }
 
     int src, dst, weight;
+    // load edges and check for negative weights
     for (int i = 0; i < edge; i++) {
         fscanf(file, "%d %d %d", &src, &dst, &weight);
         if (weight < 0) {
@@ -36,16 +39,11 @@ int main() {
     }
 
     int source, destination;
+    // get the start and end points
     fscanf(file, "%d %d", &source, &destination);
-
-
     fclose(file);
 
-    if (source == destination) {
-        printf("%d\n%d\n", source, 0);
-        return 0;
-    }
-
+    // dijkstra logic to find shortest path
     int dist[MAX_NODES];
     int visited[MAX_NODES];
     int parent[MAX_NODES];
@@ -80,31 +78,8 @@ int main() {
         }
     }
 
-    if (dist[destination] == INF) {
-        printf("No path found\n");
-        return 0;
-    }
-
-    int path[MAX_NODES];
-    int count = 0;
-
-    int cur = destination;
-    while (cur != -1) {
-        path[count++] = cur;
-        cur = parent[cur];
-    }
-
-    for (int i = count - 1; i >= 0; i--) {
-        printf("%d", path[i]);
-        if (i != 0) {
-            printf(" -> ");
-        }
-    }
-    printf("\n");
-    printf("%d\n", dist[destination]);
-
+    // set positions for the nodes on screen
     Vector2 pos[MAX_NODES];
-
     pos[0] = (Vector2){100, 100};
     pos[1] = (Vector2){300, 100};
     pos[2] = (Vector2){200, 250};
@@ -112,37 +87,46 @@ int main() {
     pos[4] = (Vector2){300, 400};
     pos[5] = (Vector2){600, 400};
 
-
-
-    InitWindow(800, 600, "Graph");
+    // create the window for the graph
+    InitWindow(800, 600, "Graph Visualizer");
     SetTargetFPS(60);
 
+    // main loop to draw everything
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
+        // draw lines and weights for each edge
         for (int i = 0; i < node; i++) {
             for (int j = 0; j < node; j++) {
                 if (graph[i][j] != 0) {
-                    DrawLine(pos[i].x, pos[i].y,
-                             pos[j].x, pos[j].y,
-                             GRAY);
+                    // draw the line
+                    DrawLineV(pos[i], pos[j], GRAY);
+
+                    // show the weight in the middle
+                    int midX = (pos[i].x + pos[j].x) / 2;
+                    int midY = (pos[i].y + pos[j].y) / 2;
+                    DrawText(TextFormat("%d", graph[i][j]), midX, midY, 15, RED);
+
+                    // show direction with a small dot
+                    float angle = atan2f(pos[j].y - pos[i].y, pos[j].x - pos[i].x);
+                    int arrowX = pos[j].x - 25 * cosf(angle);
+                    int arrowY = pos[j].y - 25 * sinf(angle);
+                    DrawCircle(arrowX, arrowY, 4, DARKGRAY);
                 }
             }
         }
 
-
-
+        // draw the nodes as blue circles
         for (int i = 0; i < node; i++) {
-            DrawCircle(pos[i].x, pos[i].y, 20, BLUE);
-            DrawText(TextFormat("%d", i),
-                     pos[i].x - 5,
-                     pos[i].y - 10,20, WHITE);
+            DrawCircleV(pos[i], 20, BLUE);
+            // write node number inside
+            DrawText(TextFormat("%d", i), pos[i].x - 5, pos[i].y - 10, 20, WHITE);
         }
+
         EndDrawing();
     }
-    CloseWindow();
 
+    CloseWindow();
     return 0;
 }
-
