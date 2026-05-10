@@ -131,7 +131,7 @@ int main() {
                             pos[j].y - tipOffset * sinf(angle)
                     };
 
-                    // V-shaped arrow (two lines from the tip)
+                    // V-shaped arrow
                     float arrowLength = 15.0f;
                     float arrowAngle = 0.4f;  // angle spread for the V shape
 
