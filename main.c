@@ -15,9 +15,6 @@ int main() {
 
     fscanf(file, "%d%d", &node, &edge);
 
-    printf("Nodes: %d\n", node);
-    printf("Edges: %d\n", edge);
-
     int graph[MAX_NODES][MAX_NODES];
 
     for(int i = 0; i < node; i++){
@@ -29,19 +26,16 @@ int main() {
     int src, dst, weight;
     for(int i = 0; i < edge; i++){
         fscanf(file, "%d %d %d", &src, &dst, &weight);
+        if (weight < 0) {
+            printf("Invalid input: Negative weight detected\n");
+            fclose(file);
+            return 0;
+        }
         graph[src][dst] = weight;
     }
 
     int source, destination;
     fscanf(file, "%d %d", &source, &destination );
-
-    printf("\nAdjacency Matrix:\n");
-    for(int i = 0; i < node; i++){
-        for(int j = 0; j < node; j++){
-            printf("%d ", graph[i][j]);
-        }
-        printf("\n");
-    }
 
 
     fclose(file);
@@ -70,10 +64,10 @@ int main() {
                 u = j;
             }
         }
-
-        if(u == -1){
+        if(u == -1 || dist[u] == INF) {
             break;
         }
+        visited[u] = 1;
 
         for(int v = 0; v < node; v++){
             if(graph[u][v] != 0 && !visited[v]){
