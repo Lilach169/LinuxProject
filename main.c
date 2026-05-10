@@ -106,15 +106,20 @@ int main() {
                     // draw connection line
                     DrawLineEx(pos[i], pos[j], 2.5f, DARKGRAY);
 
-                    // calculate midpoint for weight label
-                    int midX = (pos[i].x + pos[j].x) / 2;
-                    int midY = (pos[i].y + pos[j].y) / 2;
+                    // calculate a position at 60% of the line (closer to the destination)
+                    // this naturally separates the 2 and the 10
+                    float ratio = 0.6f;
+                    int labelX = (int)(pos[i].x + (pos[j].x - pos[i].x) * ratio);
+                    int labelY = (int)(pos[i].y + (pos[j].y - pos[i].y) * ratio);
 
-                    // white background behind weight
-                    DrawRectangle(midX - 12, midY - 12, 24, 24, RAYWHITE);
+                    // adjust slightly so the number doesn't sit exactly ON the line
+                    labelY += 10;
 
-                    // draw weight text (only once!)
-                    DrawText(TextFormat("%d", graph[i][j]), midX - 6, midY - 10, 20, MAROON);
+                    // draw a white background box to clear the line
+                    DrawRectangle(labelX - 12, labelY - 12, 30, 24, RAYWHITE);
+
+                    // draw the weight
+                    DrawText(TextFormat("%d", graph[i][j]), labelX - 8, labelY - 10, 22, MAROON);
 
                     // calculate arrow direction
                     float angle = atan2f(pos[j].y - pos[i].y, pos[j].x - pos[i].x);
@@ -146,7 +151,19 @@ int main() {
                 }
             }
         }
+// draw nodes on top of the lines
+        for (int i = 0; i < node; i++) {
+            // thin black border
+            DrawCircleV(pos[i], 22, BLACK);
+            // pink node
+            DrawCircleV(pos[i], 20, CUSTOM_PINK);
 
+            // centered text
+            const char* idText = TextFormat("%d", i);
+            int fontSize = 25;
+            int textWidth = MeasureText(idText, fontSize);
+            DrawText(idText, pos[i].x - textWidth / 2, pos[i].y - 12, fontSize, BLACK);
+        }
         EndDrawing();
 
     }
