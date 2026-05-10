@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "raylib.h"
 
 #define MAX_NODES 100
 #define INF 1000000000
@@ -102,6 +103,21 @@ int main() {
     printf("\n");
     printf("%d\n", dist[destination]);
 
+    Vector2 pos[MAX_NODES];
+
+    pos[0] = (100,100);
+    pos[1] = (300,100);
+    pos[2] = (200,250);
+    pos[3] = (500,250);
+    pos[4] = (300,400);
+    pos[5] = (600,400);
+
+    InitWindow(800, 600, "Graph");
+    SetTargetFPS(60);
+    while (!WindowShouldClose()) {
+
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
 
     return 0;
 }
