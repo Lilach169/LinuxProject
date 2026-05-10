@@ -7,7 +7,7 @@
 int main() {
     FILE *file = fopen("input.txt", "r");
 
-    if(file == NULL){
+    if (file == NULL) {
         printf("Error opening file\n");
         return 0;
     }
@@ -18,14 +18,14 @@ int main() {
 
     int graph[MAX_NODES][MAX_NODES];
 
-    for(int i = 0; i < node; i++){
-        for(int j = 0; j < node; j++){
+    for (int i = 0; i < node; i++) {
+        for (int j = 0; j < node; j++) {
             graph[i][j] = 0;
         }
     }
 
     int src, dst, weight;
-    for(int i = 0; i < edge; i++){
+    for (int i = 0; i < edge; i++) {
         fscanf(file, "%d %d %d", &src, &dst, &weight);
         if (weight < 0) {
             printf("Invalid input: Negative weight detected\n");
@@ -36,12 +36,12 @@ int main() {
     }
 
     int source, destination;
-    fscanf(file, "%d %d", &source, &destination );
+    fscanf(file, "%d %d", &source, &destination);
 
 
     fclose(file);
 
-    if(source == destination){
+    if (source == destination) {
         printf("%d\n%d\n", source, 0);
         return 0;
     }
@@ -50,7 +50,7 @@ int main() {
     int visited[MAX_NODES];
     int parent[MAX_NODES];
 
-    for(int i = 0; i< node; i++){
+    for (int i = 0; i < node; i++) {
         dist[i] = INF;
         visited[i] = 0;
         parent[i] = -1;
@@ -58,21 +58,21 @@ int main() {
 
     dist[source] = 0;
 
-    for(int i = 0; i < node; i++){
+    for (int i = 0; i < node; i++) {
         int u = -1;
-        for(int j = 0; j < node; j++){
-            if(!visited[j]&& (u == -1 || dist[j] < dist[u])){
+        for (int j = 0; j < node; j++) {
+            if (!visited[j] && (u == -1 || dist[j] < dist[u])) {
                 u = j;
             }
         }
-        if(u == -1 || dist[u] == INF) {
+        if (u == -1 || dist[u] == INF) {
             break;
         }
         visited[u] = 1;
 
-        for(int v = 0; v < node; v++){
-            if(graph[u][v] != 0 && !visited[v]){
-                if (dist[u] + graph[u][v] < dist[v]){
+        for (int v = 0; v < node; v++) {
+            if (graph[u][v] != 0 && !visited[v]) {
+                if (dist[u] + graph[u][v] < dist[v]) {
                     dist[v] = dist[u] + graph[u][v];
                     parent[v] = u;
                 }
@@ -80,7 +80,7 @@ int main() {
         }
     }
 
-    if(dist[destination] == INF){
+    if (dist[destination] == INF) {
         printf("No path found\n");
         return 0;
     }
@@ -89,14 +89,14 @@ int main() {
     int count = 0;
 
     int cur = destination;
-    while (cur!= -1){
+    while (cur != -1) {
         path[count++] = cur;
-        cur = parent [cur];
+        cur = parent[cur];
     }
 
-    for(int i = count - 1; i >= 0; i--){
+    for (int i = count - 1; i >= 0; i--) {
         printf("%d", path[i]);
-        if(i != 0){
+        if (i != 0) {
             printf(" -> ");
         }
     }
@@ -105,12 +105,14 @@ int main() {
 
     Vector2 pos[MAX_NODES];
 
-    pos[0] = (100,100);
-    pos[1] = (300,100);
-    pos[2] = (200,250);
-    pos[3] = (500,250);
-    pos[4] = (300,400);
-    pos[5] = (600,400);
+    pos[0] = (Vector2){100, 100};
+    pos[1] = (Vector2){300, 100};
+    pos[2] = (Vector2){200, 250};
+    pos[3] = (Vector2){500, 250};
+    pos[4] = (Vector2){300, 400};
+    pos[5] = (Vector2){600, 400};
+
+
 
     InitWindow(800, 600, "Graph");
     SetTargetFPS(60);
@@ -119,5 +121,32 @@ int main() {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
+        for (int i = 0; i < node; i++) {
+            for (int j = 0; j < node; j++) {
+
+                if (graph[i][j] != 0) {
+                    DrawLine(pos[i].x, pos[i].y,
+                             pos[j].x, pos[j].y,
+                             GRAY);
+                }
+            }
+        }
+
+    }
+    for (int i = 0; i < node; i++) {
+
+        DrawCircle(pos[i].x, pos[i].y, 20, BLUE);
+
+        DrawText(TextFormat("%d", i),
+                 pos[i].x - 5,
+                 pos[i].y - 10,
+                 20,
+                 WHITE);
+    }
+    EndDrawing();
+}
+
+CloseWindow();
     return 0;
 }
+
