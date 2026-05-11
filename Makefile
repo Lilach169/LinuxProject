@@ -5,7 +5,7 @@ milestone2:
 	gcc sim.c -o sim
 
 milestone3:
-	gcc sim_animation.c -o sim -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+	gcc sim_animation.c -o sim -I"C:/raylib/include" -L"C:/raylib/lib" -lraylib -lopengl32 -lgdi32 -lwinmm
 
 clean:
 	rm -f dijkstra sim
