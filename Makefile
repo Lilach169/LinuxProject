@@ -1,8 +1,8 @@
 milestone1:
-	gcc main.c -o dijkstra
+	gcc dijkstra.c -o dijkstra
 
 milestone2:
-	gcc sim.c -o sim
+	gcc main.c -o sim -lraylib -lm -lpthread -ldl -lrt -lX11
 
 milestone3:
 	gcc sim_animation.c -o sim -lraylib -lm -lpthread -ldl -lrt -lX11
