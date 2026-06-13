@@ -72,16 +72,31 @@ How to compile: make milestone5
 
 How to run: ./sim input.txt
 
+Milestone 6:
+
+Added synchronization for graph nodes.
+Each node is protected by a semaphore so only one traveler can stay inside a node at a time.
+Travelers arriving while a node is occupied wait outside the node until it becomes available.
+The GUI marks waiting travelers with an orange ring.
+
+How to compile: make milestone6
+
+How to run: ./sim input.txt
+
 #Responsibilities:
 
-Lilach Rachmani-
-* Implemented Dijkstra's algorithm and graph processing.
-* Managed input file parsing and validation.
-* Designed and improved the graphical user interface.
-* Integrated process management and milestone functionality.
+Lilach Rachmani:
 
-Oranne Berrih-
-* Implemented traveler animation and movement logic.
-* Developed timing and node transition behavior.
-* Tested different graph scenarios and edge cases.
-* Performed debugging and quality assurance testing.
+-Implemented Dijkstra's algorithm and graph processing.
+-Managed input file parsing and validation.
+-Designed and improved the graphical user interface.
+-Integrated process management and milestone functionality.
+-Implemented node synchronization and semaphore-based access control for Milestone 6.
+
+Oranne Berrih:
+
+-Implemented traveler animation and movement logic.
+-Developed timing and node transition behavior.
+-Tested different graph scenarios and edge cases.
+-Performed debugging and quality assurance testing.
+-Assisted in synchronization testing and traveler waiting-state visualization.
