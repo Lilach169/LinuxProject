@@ -15,6 +15,7 @@ What We Did:
 * Added input validation and graph parsing.
 
 Compile: make milestone1
+
 Run: ./dijkstra <input_file>
 
 #Milestone 2 - Graph Visualization
@@ -26,6 +27,7 @@ What We Did:
 * Created a graphical representation of the loaded graph.
 
 Compile: make milestone2
+
 Run: ./sim <input_file>
 
 #Milestone 3 - Animation System
@@ -38,6 +40,7 @@ What We Did:
 * Added destination arrival indication.
 
 Compile: make milestone3
+
 Run: ./sim <input_file>
 
 #Milestone 4 - Multiple Processes and Travelers
@@ -52,9 +55,11 @@ What We Did:
 * Added synchronization using waitpid() before program termination.
 
 Compile: make milestone4
+
 Run: ./sim <input_file>
 
 #Responsibilities:
+
 Lilach Rachmani-
 * Implemented Dijkstra's algorithm and graph processing.
 * Managed input file parsing and validation.
