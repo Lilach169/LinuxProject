@@ -99,6 +99,8 @@ int main(int argc, char *argv[])
         if (pid == 0)
         {
             // child process
+		printf("[%d] started\n", getpid()));
+		fflush(stdout);
             while (1)
             {
                 pause();
