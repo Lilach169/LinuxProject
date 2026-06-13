@@ -7,5 +7,8 @@ milestone2:
 milestone3:
 	gcc sim_animation.c -o sim -lraylib -lm -lpthread -ldl -lrt -lX11
 
+milestone4:
+	gcc milestone4.c -o sim -lraylib -lm -lpthread -ldl -lrt -lX11
+
 clean:
 	rm -f dijkstra sim
