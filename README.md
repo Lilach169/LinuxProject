@@ -58,6 +58,19 @@ Compile: make milestone4
 
 Run: ./sim <input_file>
 
+Milestone 5:
+In this milestone, each child process calculates its own shortest path using Dijkstra’s algorithm.
+The child processes communicate their current node and next node to the parent process using pipes.
+The parent process receives these messages, prints the required log format to the terminal, and updates the GUI animation.
+
+IPC choice:
+We chose pipes because they are simple, built-in Linux IPC mechanism, and fit the project requirement of sending small messages from each child process to the parent process.
+Each traveler has its own pipe, so the parent can read updates from every child separately.
+
+How to compile: make milestone5
+
+How to run: ./sim input.txt
+
 #Responsibilities:
 
 Lilach Rachmani-
