@@ -1,28 +1,82 @@
-Lilach Rachmani 314843145
-oranne berrih 332671312
+Linux Project - Graph Path Simulation
 
-This project is a visual tool that finds and animates the shortest path between different nodes in a graph. we used Dijkstra's Algorithm to calculate the best route. The project is built using the C language and the Raylib library for graphics.
+## Team Members
 
-Milestone 1:
-What we did: Built the core logic, implemented Dijkstra's Algorithm, and handled graph data structures from an input file.
-How to Compile: make milestone1
-How to Run: ./dijkstra
+* **Lilach Rachmani**- 314843145
+* **Oranne Berrih**- 332671312
 
-Milestone 2:
-What we did: Integrated Raylib to create a window, draw nodes and edges, and added a basic user interface with a PLAY button.
-How to Compile: make milestone2
-How to Run: ./sim
+## Project Description
+This project is a visual simulation tool that finds and animates the shortest path between nodes in a graph. The shortest path is calculated using Dijkstra's Algorithm, while the graphical interface and animations are implemented using the Raylib library in C.
 
-Milestone 3:
-What we did: Added a moving entity with specific timing (0.3s jumps and 1.0s wait). Styled the map, highlighted the source node in white, and added a completion message.
-How to Compile: make milestone3
-How to Run: ./sim
+## Milestone 1 – Dijkstra Algorithm
+# What We Did
+* Implemented Dijkstra's shortest path algorithm.
+* Built graph data structures from an input file.
+* Added input validation and graph parsing.
 
-Responsibilities
-*Lilach:
--Algorithm Design: Implementing Dijkstra's logic and handling data from the input file.
--UI/UX Design: Creating a clean, dark-themed interface with high-contrast colors for better visibility.
-*Oranne:
-Animation System: Managing the timing and movement logic of the entity moving between nodes.
-Quality Assurance: Testing different graph shapes to ensure the path is always correct and the program doesn't crash.
+# Compile
+make milestone1
 
+# Run
+./dijkstra <input_file>
+
+## Milestone 2 – Graph Visualization
+# What We Did
+* Integrated the Raylib graphics library.
+* Displayed graph nodes and edges visually.
+* Added a PLAY button and basic GUI controls.
+* Created a graphical representation of the loaded graph.
+
+# Compile
+make milestone2
+
+### Run
+./sim <input_file>
+
+## Milestone 3 – Animation System
+
+# What We Did
+
+* Added animated traveler movement along the shortest path.
+* Implemented movement timing according to edge weights.
+* Added 0.3-second movement steps and 1-second pauses at intermediate nodes.
+* Improved graph styling and user interface.
+* Added destination arrival indication.
+
+# Compile
+make milestone3
+
+# Run
+
+./sim <input_file>
+
+## Milestone 4 – Multiple Processes and Travelers
+
+# What We Did
+* Added support for multiple travelers moving simultaneously.
+* Implemented parent-child architecture using `fork()`.
+* The parent process calculates Dijkstra paths and manages the GUI.
+* Each traveler is displayed in a unique color.
+* Child processes print their PID upon creation and remain active during the simulation.
+* The parent process terminates child processes when their travelers reach the destination.
+* Added synchronization using `waitpid()` before program termination.
+
+# Compile
+make milestone4
+
+# Run
+./sim <input_file>
+
+## Responsibilities
+
+# Lilach Rachmani
+* Implemented Dijkstra's algorithm and graph processing.
+* Managed input file parsing and validation.
+* Designed and improved the graphical user interface.
+* Integrated process management and milestone functionality.
+
+### Oranne Berrih
+* Implemented traveler animation and movement logic.
+* Developed timing and node transition behavior.
+* Tested different graph scenarios and edge cases.
+* Performed debugging and quality assurance testing.
