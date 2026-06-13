@@ -9,42 +9,42 @@ Project Description
 
 This project is a visual simulation tool that finds and animates the shortest path between nodes in a graph. The shortest path is calculated using Dijkstra's Algorithm, while the graphical interface and animations are implemented using the Raylib library in C.
 
-Milestone 1 – Dijkstra Algorithm
+Milestone 1 - Dijkstra Algorithm
 
-What We Did
+What We Did:
 
 * Implemented Dijkstra's shortest path algorithm.
 * Built graph data structures from an input file.
 * Added input validation and graph parsing.
 
-Compile
+Compile:
 
 make milestone1
 
-Run
+Run:
 
 ./dijkstra <input_file>
 
-Milestone 2 – Graph Visualization
+Milestone 2 - Graph Visualization
 
-What We Did
+What We Did:
 
 * Integrated the Raylib graphics library.
 * Displayed graph nodes and edges visually.
 * Added a PLAY button and basic GUI controls.
 * Created a graphical representation of the loaded graph.
 
-Compile
+Compile:
 
 make milestone2
 
-Run
+Run:
 
 ./sim <input_file>
 
-Milestone 3 – Animation System
+Milestone 3 - Animation System
 
-What We Did
+What We Did:
 
 * Added animated traveler movement along the shortest path.
 * Implemented movement timing according to edge weights.
@@ -52,17 +52,17 @@ What We Did
 * Improved graph styling and user interface.
 * Added destination arrival indication.
 
-Compile
+Compile:
 
 make milestone3
 
-Run
+Run:
 
 ./sim <input_file>
 
-Milestone 4 – Multiple Processes and Travelers
+Milestone 4 - Multiple Processes and Travelers
 
-What We Did
+What We Did:
 
 * Added support for multiple travelers moving simultaneously.
 * Implemented parent-child architecture using fork().
@@ -72,25 +72,23 @@ What We Did
 * The parent process terminates child processes when their travelers reach the destination.
 * Added synchronization using waitpid() before program termination.
 
-Compile
+Compile:
 
 make milestone4
 
-Run
+Run:
 
 ./sim <input_file>
 
-Responsibilities
+Responsibilities:
 
 Lilach Rachmani
-
 * Implemented Dijkstra's algorithm and graph processing.
 * Managed input file parsing and validation.
 * Designed and improved the graphical user interface.
 * Integrated process management and milestone functionality.
 
 Oranne Berrih
-
 * Implemented traveler animation and movement logic.
 * Developed timing and node transition behavior.
 * Tested different graph scenarios and edge cases.
