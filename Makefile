@@ -9,6 +9,9 @@ milestone3:
 
 milestone4:
 	gcc milestone4.c -o sim -lraylib -lm -lpthread -ldl -lrt -lX11
+	
+milestone5:
+	gcc milestone5.c -o sim -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 clean:
 	rm -f dijkstra sim
