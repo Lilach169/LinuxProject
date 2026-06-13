@@ -88,15 +88,23 @@ How to run: ./sim input.txt
 Lilach Rachmani:
 
 -Implemented Dijkstra's algorithm and graph processing.
+
 -Managed input file parsing and validation.
+
 -Designed and improved the graphical user interface.
+
 -Integrated process management and milestone functionality.
+
 -Implemented node synchronization and semaphore-based access control for Milestone 6.
 
 Oranne Berrih:
 
 -Implemented traveler animation and movement logic.
+
 -Developed timing and node transition behavior.
+
 -Tested different graph scenarios and edge cases.
+
 -Performed debugging and quality assurance testing.
+
 -Assisted in synchronization testing and traveler waiting-state visualization.
