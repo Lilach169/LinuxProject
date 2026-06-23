@@ -382,10 +382,10 @@ for (int i = 0; i < MAX_NODES; i++) {
                         canReadNextMessage = 0;
                     } else {
     int targetNode = to;
-    printf("Traveler %d wants node %d\n", i, targetNode);
+
 
   if (nodeOwner[targetNode] == i) {
-  printf("Traveler %d entered node %d\n", i, targetNode);
+
     t->waitingForNode = -1;
 
     if (!t->waiting) {
@@ -409,7 +409,7 @@ for (int i = 0; i < MAX_NODES; i++) {
     if (nodeOwner[targetNode] != -1) {
         addToQueue(waitingQueues[targetNode], &waitingCounts[targetNode], i);
         t->waitingForNode = targetNode;
-        printf("Traveler %d waiting for node %d\n", i, targetNode);
+      
         canReadNextMessage = 0;
     } else {
         if (waitingCounts[targetNode] > 0) {
@@ -430,8 +430,7 @@ for (int i = 0; i < MAX_NODES; i++) {
                 canReadNextMessage = 0;
             } else {
                 t->waitingForNode = targetNode;
-                printf("Traveler %d waiting for node %d\n", i, targetNode);
-                canReadNextMessage = 0;
+                             canReadNextMessage = 0;
             }
         } else {
             if (sem_trywait(&nodeLocks[targetNode]) == 0) {
