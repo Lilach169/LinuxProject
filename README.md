@@ -83,6 +83,32 @@ How to compile: make milestone6
 
 How to run: ./sim input.txt
 
+#Milestone 7:
+Added scheduling algorithms for node access management/
+When multiple travelers are waiting to enter the same node, the parent process now manages a waiting queue and selects which traveler may enter according to the scheduling algorithm chosen at runtime.
+
+Implemented scheduling algorithms:
+
+1. FCFS (First Come First Served)
+   - Travelers enter the node according to the order in which they arrived at the waiting queue.
+
+2. SJF (Shortest Job First)
+   - The traveler with the shortest remaining path is selected first.
+
+The scheduling algorithm is selected from the command line without changing the code.
+
+The GUI displays the active scheduling algorithm and the number of waiting travelers.
+
+How to compile:
+
+make milestone7
+
+How to run:
+
+./sim -schd fcfs input_sjf.txt
+
+./sim -schd sjf input_sjf.txt
+
 #Responsibilities:
 
 Lilach Rachmani:
@@ -97,6 +123,10 @@ Lilach Rachmani:
 
 -Implemented node synchronization and semaphore-based access control for Milestone 6.
 
+-Implemented scheduling queues and scheduler selection logic for Milestone 7.
+
+-Integrated FCFS and SJF scheduling algorithms into node access management.
+
 Oranne Berrih:
 
 -Implemented traveler animation and movement logic.
@@ -108,3 +138,9 @@ Oranne Berrih:
 -Performed debugging and quality assurance testing.
 
 -Assisted in synchronization testing and traveler waiting-state visualization.
+
+-Assisted in testing and comparing FCFS and SJF behavior.
+
+-Added traveler status visualization and scheduling-related GUI updates.
+
+-Validated scheduling scenarios and simulation outputs.

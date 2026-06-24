@@ -29,7 +29,8 @@ typedef struct {
     int waitingForNode;
     int insideNode;
     int finished;
-    
+    int remainingWeight;
+
     pid_t pid;
     Color color;
 } Traveler;
@@ -39,7 +40,13 @@ typedef struct {
     int currentNode;
     int nextNode;
     int finished;
+    int remainingWeight;
 } Message;
+
+typedef struct{
+    Vector2 history[MAX_NODES * 10];
+    int count;
+} TravelerTrace; 
 
 int readInt(FILE *file, int *value) {
     char token[256];
@@ -155,20 +162,18 @@ int chooseNextTraveler(int queue[MAX_TRAVELERS], int count,
     }
 
     int best = queue[0];
-    int bestWeight = INF;
+    int bestRemaining = INF;
 
     for (int i = 0; i < count; i++) {
         int travelerIndex = queue[i];
         Traveler *t = &travelers[travelerIndex];
 
-        int from = t->path[0];
-        int to = t->path[1];
-        int weight = graph[from][to];
+	int remaining = t->remainingWeight;
 
-        if (weight < bestWeight) {
-            bestWeight = weight;
-            best = travelerIndex;
-        }
+	if (remaining < bestRemaining){
+		bestRemaining = remaining;
+		best = travelerIndex;
+	}
     }
 
     return best;
@@ -301,6 +306,12 @@ FILE *file = fopen(argv[3], "r");
                 msg.pid = getpid();
                 msg.currentNode = childPath[j];
 
+		int remWeight = 0;
+		for(int k = j; k < childPathCount - 1; k++){
+			remWeight += graph[childPath[k]][childPath[k+1]];
+		}
+		msg.remainingWeight = remWeight;
+
                 if (j < childPathCount - 1) {
                     msg.nextNode = childPath[j + 1];
                     msg.finished = 0;
@@ -308,12 +319,9 @@ FILE *file = fopen(argv[3], "r");
                     msg.nextNode = -1;
                     msg.finished = 1;
                 }
-		
-		
+
                 write(pipes[i][1], &msg, sizeof(Message));
                 sleep(1);
-                
-             
             }
 
             close(pipes[i][1]);
@@ -335,7 +343,7 @@ FILE *file = fopen(argv[3], "r");
         };
     }
 
-    InitWindow(800, 600, "Milestone 5 - IPC Travelers");
+    InitWindow(800, 600, "Milestone 7 - Scheduling");
     SetTargetFPS(60);
 
     int isRunning = 0;
@@ -349,6 +357,10 @@ for (int i = 0; i < MAX_NODES; i++) {
     sem_init(&nodeLocks[i], 0, 1);
 }
 
+    float totalCumulativeWaitTime = 0.0f;
+    TravelerTrace traces[MAX_TRAVELERS];
+    for(int i = 0; i < travelersCount; i++) traces[i].count = 0;
+
     while (!WindowShouldClose()) {
         Rectangle btn = {10, 10, 100, 40};
 
@@ -360,6 +372,9 @@ for (int i = 0; i < MAX_NODES; i++) {
         if (isRunning) {
             for (int i = 0; i < travelersCount; i++) {
                 Traveler *t = &travelers[i];
+		if(t->waitingForNode != -1 || t->waiting){
+			totalCumulativeWaitTime += GetFrameTime();
+		}
 
                 int canReadNextMessage = 1;
 
@@ -397,7 +412,9 @@ for (int i = 0; i < MAX_NODES; i++) {
 
     if (t->timer < NODE_WAIT_TIME) {
         canReadNextMessage = 0;
+	
     } else {
+	printf("Traveler %d left node %d\n", i + 1, targetNode);
         nodeOwner[targetNode] = -1;
         sem_post(&nodeLocks[targetNode]);
 
@@ -409,40 +426,38 @@ for (int i = 0; i < MAX_NODES; i++) {
     if (nodeOwner[targetNode] != -1) {
         addToQueue(waitingQueues[targetNode], &waitingCounts[targetNode], i);
         t->waitingForNode = targetNode;
-      
+      	printf("Traveler %d waiting for node %d\n",
+		i + 1,
+		targetNode);
+
         canReadNextMessage = 0;
     } else {
-        if (waitingCounts[targetNode] > 0) {
-            addToQueue(waitingQueues[targetNode], &waitingCounts[targetNode], i);
+	    if(!isInQueue(waitingQueues[targetNode], waitingCounts[targetNode], i)){
+	    	addToQueue(waitingQueues[targetNode], &waitingCounts[targetNode], i);
+	    }
 
             int chosen = chooseNextTraveler(waitingQueues[targetNode],
                                             waitingCounts[targetNode],
                                             travelers,
                                             graph,
                                             scheduler);
-
+	     
             if (chosen == i && sem_trywait(&nodeLocks[targetNode]) == 0) {
                 removeFromQueue(waitingQueues[targetNode], &waitingCounts[targetNode], i);
                 nodeOwner[targetNode] = i;
+		printf("Traveler %d entered node %d\n", i+1, targetNode);
                 t->waitingForNode = -1;
                 t->waiting = 1;
                 t->timer = 0.0f;
-                canReadNextMessage = 0;
+		canReadNextMessage = 0;
             } else {
                 t->waitingForNode = targetNode;
-                             canReadNextMessage = 0;
+		canReadNextMessage = 0;
             }
-        } else {
-            if (sem_trywait(&nodeLocks[targetNode]) == 0) {
-                nodeOwner[targetNode] = i;
-                t->waitingForNode = -1;
-                t->waiting = 1;
-                t->timer = 0.0f;
-                canReadNextMessage = 0;
-            }
-        }
+
+	}
+
     }
-}
 }
                 }
 
@@ -452,6 +467,7 @@ for (int i = 0; i < MAX_NODES; i++) {
 
                     if (bytes == sizeof(Message)) {
                         t->path[0] = msg.currentNode;
+			t->remainingWeight = msg.remainingWeight;
 
                         if (msg.finished) {
                             t->path[1] = msg.currentNode;
@@ -485,6 +501,17 @@ for (int i = 0; i < MAX_NODES; i++) {
         DrawRectangleRec(btn, LIGHTGRAY);
         DrawText(isRunning ? "STOP" : "PLAY", 25, 20, 20, BLACK);
         DrawText(TextFormat("Scheduler: %s", scheduler), 130, 20, 20, WHITE);
+
+	int totalWaiting = 0;
+	for(int i = 0; i < node; i++){
+		totalWaiting += waitingCounts[i];
+	}
+	
+	DrawText(TextFormat("Total waiting time: %.1f s", totalCumulativeWaitTime),
+		350,
+		20,
+		20,
+		YELLOW);
 
         for (int i = 0; i < node; i++) {
             for (int j = 0; j < node; j++) {
@@ -562,31 +589,49 @@ for (int i = 0; i < MAX_NODES; i++) {
                 }
 
                 if (move > 1.0f) {
-                    move = 1.0f;
-                }
+                    move = 1.0f;                }
 
                 travelerPos = (Vector2){
                     pos[from].x + (pos[to].x - pos[from].x) * move,
                     pos[from].y + (pos[to].y - pos[from].y) * move
                 };
             }
+	if(t->waiting == 0 && t->waitingForNode == -1){
+            if(traces[i].count < (MAX_NODES * 10 -1)){
+	        traces[i].history[traces[i].count++] = travelerPos;
+	    }
+	}
+
+	for(int j = 0; j < traces[i].count; j++){
+	    DrawCircleV(traces[i].history[j], 3, Fade(t->color, 0.5f));
+	}
 if (t->waitingForNode != -1) {
     DrawCircleV(travelerPos, 14, t->color);
     DrawCircleLines((int)travelerPos.x,
                     (int)travelerPos.y, 20,ORANGE);
-                   
-   
+    DrawText("Wait",
+	     travelerPos.x - 15,
+             travelerPos.y - 35,
+	     12,
+	     ORANGE);
 } else {
     DrawCircleV(travelerPos, 13, t->color);
 }
 
-//DrawText(TextFormat("%d", i + 1),
-        // travelerPos.x - 4,
-        // travelerPos.y - 8,
-//16,
-       //  BLACK);
+if (t->waiting){
+	DrawCircleLines((int)travelerPos.x,
+			(int)travelerPos.y,
+			24,
+			GREEN);
 }
-        EndDrawing();
+
+DrawText(TextFormat("%d", i + 1),
+        travelerPos.x - 4,
+        travelerPos.y - 8,
+	16,
+        BLACK);
+}
+    EndDrawing();
     }
 
     for (int i = 0; i < travelersCount; i++) {
@@ -597,6 +642,9 @@ if (t->waitingForNode != -1) {
         waitpid(travelers[i].pid, NULL, 0);
     }
 
+    for (int i = 0; i < MAX_NODES; i++){
+	sem_destroy(&nodeLocks[i]);
+    }
     CloseWindow();
 
     return 0;
