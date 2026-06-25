@@ -30,7 +30,7 @@ typedef struct {
     int insideNode;
     int finished;
     int remainingWeight;
-
+    int burstTime;
     pid_t pid;
     Color color;
 } Traveler;
@@ -157,26 +157,24 @@ int chooseNextTraveler(int queue[MAX_TRAVELERS], int count,
                        char scheduler[10]) {
     if (count == 0) return -1;
 
+    // FCFS
     if (strcmp(scheduler, "fcfs") == 0) {
         return queue[0];
     }
 
-    int best = queue[0];
-    int bestRemaining = INF;
+    // SJF
+    int bestIndex = 0; 
+    int minBurst = travelers[queue[0]].burstTime;
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 1; i < count; i++) {
         int travelerIndex = queue[i];
-        Traveler *t = &travelers[travelerIndex];
-
-	int remaining = t->remainingWeight;
-
-	if (remaining < bestRemaining){
-		bestRemaining = remaining;
-		best = travelerIndex;
-	}
+        if (travelers[travelerIndex].burstTime < minBurst) {
+            minBurst = travelers[travelerIndex].burstTime;
+            bestIndex = i;
+        }
     }
 
-    return best;
+    return queue[bestIndex];
 }
 
 int main(int argc, char *argv[]) {
@@ -253,12 +251,13 @@ FILE *file = fopen(argv[3], "r");
     };
 
     for (int i = 0; i < travelersCount; i++) {
-        if (!readInt(file, &travelers[i].source) ||
-            !readInt(file, &travelers[i].destination)) {
-            printf("Invalid traveler input\n");
-            fclose(file);
-            return 1;
-        }
+    if (!readInt(file, &travelers[i].source) ||
+        !readInt(file, &travelers[i].destination) ||
+        !readInt(file, &travelers[i].burstTime)) {
+        printf("Invalid traveler input\n");
+        fclose(file);
+        return 1;
+    }
 
         travelers[i].pathCount = 0;
         travelers[i].pathIndex = 0;
@@ -321,7 +320,7 @@ FILE *file = fopen(argv[3], "r");
                 }
 
                 write(pipes[i][1], &msg, sizeof(Message));
-                sleep(1);
+            
             }
 
             close(pipes[i][1]);
@@ -379,93 +378,90 @@ for (int i = 0; i < MAX_NODES; i++) {
                 int canReadNextMessage = 1;
 
                 if (t->pathCount >= 2 && !t->finished) {
-                    int from = t->path[0];
-                    int to = t->path[1];
-                    int weight = graph[from][to];
+    int from = t->path[0];
+    int to = t->path[1];
+    int weight = graph[from][to];
 
-                   int entryStep = weight - 1;
-		if (entryStep < 0) entryStep = 0;
+    int entryStep = weight - 1;
+    if (entryStep < 0) entryStep = 0;
 
-		if (weight > 0 && t->currentStep < entryStep) {
-                        t->timer += GetFrameTime();
+    if (weight > 0 && t->currentStep < entryStep) {
+        t->timer += GetFrameTime();
 
-                        if (t->timer >= TICK_TIME) {
-                            t->timer = 0.0f;
-                            t->currentStep++;
-                        }
-
-                        canReadNextMessage = 0;
-                    } else {
-    int targetNode = to;
-
-
-  if (nodeOwner[targetNode] == i) {
-
-    t->waitingForNode = -1;
-
-    if (!t->waiting) {
-        t->waiting = 1;
-        t->timer = 0.0f;
-    }
-
-    t->timer += GetFrameTime();
-
-    if (t->timer < NODE_WAIT_TIME) {
-        canReadNextMessage = 0;
-	
-    } else {
-	printf("Traveler %d left node %d\n", i + 1, targetNode);
-        nodeOwner[targetNode] = -1;
-        sem_post(&nodeLocks[targetNode]);
-
-        t->waiting = 0;
-        t->timer = 0.0f;
-        t->waitingForNode = -1;
-    }
-} else {
-    if (nodeOwner[targetNode] != -1) {
-        addToQueue(waitingQueues[targetNode], &waitingCounts[targetNode], i);
-        t->waitingForNode = targetNode;
-      	printf("Traveler %d waiting for node %d\n",
-		i + 1,
-		targetNode);
+        if (t->timer >= TICK_TIME) {
+            t->timer = 0.0f;
+            t->currentStep++;
+        }
 
         canReadNextMessage = 0;
     } else {
-	    if(!isInQueue(waitingQueues[targetNode], waitingCounts[targetNode], i)){
-	    	addToQueue(waitingQueues[targetNode], &waitingCounts[targetNode], i);
-	    }
+        int targetNode = to;
 
-            int chosen = chooseNextTraveler(waitingQueues[targetNode],
-                                            waitingCounts[targetNode],
-                                            travelers,
-                                            graph,
-                                            scheduler);
-	     
-            if (chosen == i && sem_trywait(&nodeLocks[targetNode]) == 0) {
-                removeFromQueue(waitingQueues[targetNode], &waitingCounts[targetNode], i);
-                nodeOwner[targetNode] = i;
-		printf("Traveler %d entered node %d\n", i+1, targetNode);
-                t->waitingForNode = -1;
+        if (nodeOwner[targetNode] == i) {
+            t->waitingForNode = -1;
+
+            if (!t->waiting) {
                 t->waiting = 1;
                 t->timer = 0.0f;
-		canReadNextMessage = 0;
-            } else {
-                t->waitingForNode = targetNode;
-		canReadNextMessage = 0;
             }
 
-	}
+            t->timer += GetFrameTime();
 
+            if (t->timer < NODE_WAIT_TIME) {
+                canReadNextMessage = 0;
+            } else {
+                printf("Traveler %d left node %d\n", i, targetNode);
+
+                nodeOwner[targetNode] = -1;
+                sem_post(&nodeLocks[targetNode]);
+
+                t->waiting = 0;
+                t->timer = 0.0f;
+                t->waitingForNode = -1;
+                t->pathCount = 0;
+                t->currentStep = 0;
+
+                canReadNextMessage = 1;
+            }
+        } else {
+            if (!isInQueue(waitingQueues[targetNode], waitingCounts[targetNode], i)) {
+                addToQueue(waitingQueues[targetNode], &waitingCounts[targetNode], i);
+                printf("Traveler %d waiting for node %d\n", i, targetNode);
+            }
+
+            t->waitingForNode = targetNode;
+
+            if (nodeOwner[targetNode] == -1) {
+                int chosen = chooseNextTraveler(waitingQueues[targetNode],
+                                                waitingCounts[targetNode],
+                                                travelers,
+                                                graph,
+                                                scheduler);
+
+                if (chosen == i && sem_trywait(&nodeLocks[targetNode]) == 0) {
+                    removeFromQueue(waitingQueues[targetNode], &waitingCounts[targetNode], i);
+
+                    nodeOwner[targetNode] = i;
+                    printf("Traveler %d entered node %d\n", i, targetNode);
+
+                    t->currentStep = weight;
+                    t->waitingForNode = -1;
+                    t->waiting = 1;
+                    t->timer = 0.0f;
+                }
+            }
+
+            canReadNextMessage = 0;
+        }
     }
 }
-                }
 
                 if (canReadNextMessage) {
                     Message msg;
                     ssize_t bytes = read(pipes[i][0], &msg, sizeof(Message));
 
                     if (bytes == sizeof(Message)) {
+                    t->pathCount = 2;
                         t->path[0] = msg.currentNode;
 			t->remainingWeight = msg.remainingWeight;
 
@@ -625,7 +621,7 @@ if (t->waiting){
 			GREEN);
 }
 
-DrawText(TextFormat("%d", i + 1),
+DrawText(TextFormat("%d", i),
         travelerPos.x - 4,
         travelerPos.y - 8,
 	16,
