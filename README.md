@@ -90,12 +90,16 @@ When multiple travelers are waiting to enter the same node, the parent process n
 Implemented scheduling algorithms:
 
 1. FCFS (First Come First Served)
-   - Travelers enter the node according to the order in which they arrived at the waiting queue.
+    Travelers enter the node according to the order in which they arrived at the waiting queue.
 
 2. SJF (Shortest Job First)
-   - The traveler with the shortest remaining path is selected first.
+   Each traveler has a burstTime value in the input file.
+   When several travelers wait for the same node, the traveler with the smallest burstTime is selected first.
 
 The scheduling algorithm is selected from the command line without changing the code.
+
+Input format for Milestone 7:
+source destination burstTime
 
 The GUI displays the active scheduling algorithm and the number of waiting travelers.
 
@@ -108,6 +112,13 @@ How to run:
 ./sim -schd fcfs input_sjf.txt
 
 ./sim -schd sjf input_sjf.txt
+
+Example:
+FCFS:
+Travelers enter the shared node according to their arrival order.
+
+SJF:
+Travelers enter the shared node according to the smallest burstTime.
 
 #Responsibilities:
 
