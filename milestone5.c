@@ -27,7 +27,11 @@ typedef struct {
     Color color;
 } Traveler;
 
+#define MSG_MOVE 1
+#define MSG_NO_PATH 2
+
 typedef struct {
+    int type;
     pid_t pid;
     int currentNode;
     int nextNode;
@@ -221,11 +225,24 @@ int main(int argc, char *argv[]) {
                      travelers[i].destination,
                      childPath,
                      &childPathCount);
+                     if (childPathCount == 0) {
+    Message msg;
+    msg.type = MSG_NO_PATH;
+    msg.pid = getpid();
+    msg.currentNode = travelers[i].source;
+    msg.nextNode = travelers[i].destination;
+    msg.finished = 1;
+
+    write(pipes[i][1], &msg, sizeof(Message));
+    close(pipes[i][1]);
+    exit(0);
+}
 
             for (int j = 0; j < childPathCount; j++) {
-                Message msg;
-                msg.pid = getpid();
-                msg.currentNode = childPath[j];
+               Message msg;
+               msg.type = MSG_MOVE;
+		msg.pid = getpid();
+		msg.currentNode = childPath[j];
 
                 if (j < childPathCount - 1) {
                     msg.nextNode = childPath[j + 1];
@@ -313,6 +330,12 @@ int main(int argc, char *argv[]) {
                     ssize_t bytes = read(pipes[i][0], &msg, sizeof(Message));
 
                     if (bytes == sizeof(Message)) {
+                      if (msg.type == MSG_NO_PATH) {
+        printf("[PID=%d] NO PATH from %d to %d\n",
+               msg.pid, msg.currentNode, msg.nextNode);
+        t->finished = 1;
+        continue;
+    }
                         t->path[0] = msg.currentNode;
 
                         if (msg.finished) {
