@@ -159,7 +159,7 @@ int chooseNextTraveler(int queue[MAX_TRAVELERS], int count,
 
     // FCFS
     if (strcmp(scheduler, "fcfs") == 0) {
-	printf("Scheduler fcfs- choosing traveler %d first in first serve", queue[0]);
+	printf("Scheduler fcfs- choosing traveler %d because it is first in queue", queue[0]);
         return queue[0];
     }
 
@@ -178,7 +178,7 @@ int chooseNextTraveler(int queue[MAX_TRAVELERS], int count,
         }
     }
 
-    printf("Scheduler sjf selected traveler %d (burst = %d)\n", queue[bestIndex], travelers[queue[bestIndex]].burstTime);
+    printf("Scheduler sjf selected traveler %d because it has the smaller burst time (burst = %d)\n", queue[bestIndex], travelers[queue[bestIndex]].burstTime);
 
     return queue[bestIndex];
 }
