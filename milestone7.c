@@ -159,13 +159,17 @@ int chooseNextTraveler(int queue[MAX_TRAVELERS], int count,
 
     // FCFS
     if (strcmp(scheduler, "fcfs") == 0) {
+	printf("Scheduler fcfs- choosing traveler %d first in first serve", queue[0]);
         return queue[0];
     }
 
     // SJF
     int bestIndex = 0; 
     int minBurst = travelers[queue[0]].burstTime;
-
+    printf("Scheduler sjf- queue: ");
+    for (int i = 0; i < count; i++){
+        printf("%d (burst = %d) \n", queue[i], travelers[queue[i]].burstTime);
+    }
     for (int i = 1; i < count; i++) {
         int travelerIndex = queue[i];
         if (travelers[travelerIndex].burstTime < minBurst) {
@@ -173,6 +177,8 @@ int chooseNextTraveler(int queue[MAX_TRAVELERS], int count,
             bestIndex = i;
         }
     }
+
+    printf("Scheduler sjf selected traveler %d (burst = %d)\n", queue[bestIndex], travelers[queue[bestIndex]].burstTime);
 
     return queue[bestIndex];
 }
